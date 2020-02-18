@@ -25,15 +25,34 @@ server.post("/cars", async (req, res) => {
   }
 });
 
-// server.put("/cars/:id", async (req, res) => {
-//   try {
-//     const updatedCarID = await db("cars")
-//       .where({ id: req.params.id })
-//       .update(req.body);
-//     res.status(200).json(updatedCarID);
-//   } catch (error) {
-//     res.status(500).json({ error: "server error :(" });
-//   }
-// });
+server.put("/cars/:id", async (req, res) => {
+  try {
+    await db("cars")
+      .where({ id: Number(req.params.id) })
+      .update(req.body);
+    const updatedCar = await db("cars")
+      .where({ id: Number(req.params.id) })
+      .first();
+    res.status(200).json(updatedCar);
+  } catch (error) {
+    res.status(500).json({ error: "server error :(" });
+  }
+});
+
+server.delete("/cars/:id", async (req, res) => {
+  try {
+    const itemToDelete = await db("cars")
+      .where({ id: Number(req.params.id) })
+      .first();
+    await db("cars")
+      .where({ id: Number(req.params.id) })
+      .delete();
+    res.status(200).json({
+      msg: `Successfully deleted ${itemToDelete.make} ${itemToDelete.model}.`
+    });
+  } catch (error) {
+    res.status(500).json({ error: "server error :(" });
+  }
+});
 
 module.exports = server;
